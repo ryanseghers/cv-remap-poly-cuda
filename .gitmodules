@@ -1,0 +1,6 @@
+[submodule "cpp-base-util"]
+	path = cpp-base-util
+	url = ../cpp-base-util.git
+[submodule "cpp-opencv-util"]
+	path = cpp-opencv-util
+	url = git@github.com:ryanseghers/cpp-opencv-util.git

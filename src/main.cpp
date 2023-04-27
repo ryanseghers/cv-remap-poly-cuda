@@ -7,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "ImageUtil.h"
-#include "CVRemap.h"
+#include "remap.h"
 #include "avxRemapPoly.h"
 
 #include "cudaAddKernel.h"
@@ -17,7 +17,7 @@
 using namespace std;
 using namespace std::chrono;
 using namespace CVRemap;
-using namespace Wxiv;
+using namespace CppOpenCVUtil;
 
 std::array<float, 10> x_coeff =
 {
