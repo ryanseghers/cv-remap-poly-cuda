@@ -17,6 +17,15 @@ Thus the optical distortion model comprises two sets of coefficients for that po
 ## Purpose
 The OpenCV approach of representing sample points with two float images is probably best in most scenarios, however note that two 32-bit float images (which have same size as the output image) consume some memory and some memory bandwidth. Either of those may be an issue in some circumstances, for example in the GPGPU scenario when there is limited memory on the device and/or limited memory bandwidth between host and device. Using the 2-d polynomial approach, instead of copying two full-sized float32 images to the device one just needs to pass the 20 polynomial coefficients. For that reason I was interested to implement this polynomial-based remap and investigate the performance in the GPGPU scenario.
 
+## Build
+This uses the following other packages:
+* CUDA Toolkit
+* Eigen3 (I also tried Armadillo but the vcpkg build is orders of magnitude heavier than Eigen3, and it failed)
+* fmt
+* OpenCV
+
+This build is not particularly portable nor self-contained yet. I am using vcpkg to manage dependencies and have no scripts yet to make that easy. So for now, you could use vcpkg or other package manager to make those available.
+
 ## Results
 I've written a canonical C++ implementation, an x64 intrinsics AVX implementation, and the CUDA implementation and some benchmark functions to evaluate performance.
 

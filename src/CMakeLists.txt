@@ -25,6 +25,7 @@ set(CMAKE_CUDA_FLAGS "-std=c++20")
 # other dependencies
 find_package(fmt CONFIG REQUIRED)
 find_package(OpenCV CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -36,6 +37,8 @@ set(SOURCE_FILES
 
 	avxRemapPoly.h
 	avxRemapPoly.cpp
+	brownConradyModel.h
+	brownConradyModel.cpp
 	cudaAddKernel.h
 	cudaAddKernel.cu
 	cudaRemapPoly.h
@@ -52,4 +55,4 @@ set(SOURCE_FILES
 
 add_executable (cvremap ${SOURCE_FILES})
 target_include_directories(cvremap PUBLIC ".")
-target_link_libraries(cvremap PUBLIC ${OpenCV_LIBS} fmt::fmt CUDA::cudart_static CppOpenCVUtilLib)
+target_link_libraries(cvremap PUBLIC ${OpenCV_LIBS} fmt::fmt CUDA::cudart_static CppOpenCVUtilLib Eigen3::Eigen)

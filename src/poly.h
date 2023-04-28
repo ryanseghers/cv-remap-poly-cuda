@@ -21,5 +21,7 @@ namespace CVRemap
 
         float evalDx(float x, float y);
         float evalDy(float x, float y);
+
+        void print();
     };
 }

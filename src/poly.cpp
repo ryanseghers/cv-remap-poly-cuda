@@ -1,3 +1,4 @@
+#include <fmt/core.h>
 #include "poly.h"
 
 namespace CVRemap
@@ -40,5 +41,26 @@ namespace CVRemap
     float RemapCoeffs3rdOrder::evalDy(float x, float y)
     {
         return evalPoly(dyCoeffs, x, y);
+    }
+
+    void RemapCoeffs3rdOrder::print()
+    {
+        fmt::print("X: ");
+
+        for (int i = 0; i < dxCoeffs.size(); i++)
+        {
+            fmt::print("{:.3f}, ", dxCoeffs[i]);
+        }
+
+        fmt::print("\n");
+
+        fmt::print("Y: ");
+
+        for (int i = 0; i < dyCoeffs.size(); i++)
+        {
+            fmt::print("{:.3f}, ", dyCoeffs[i]);
+        }
+
+        fmt::print("\n");
     }
 }
