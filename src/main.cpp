@@ -23,7 +23,7 @@ using namespace CppOpenCVUtil;
 
 std::array<float, 10> x_coeff =
 {
-    0.0, // c0
+    0.0, // 1
     0.0, // x
     0.0, // y
     0.0, // x^2
@@ -37,7 +37,7 @@ std::array<float, 10> x_coeff =
 
 std::array<float, 10> y_coeff =
 {
-    0.0, // c0
+    0.0, // 1
     0.0, // x
     0.0, // y
     0.0, // x^2
@@ -349,6 +349,34 @@ bool fitPointPairs(const std::vector<std::tuple<cv::Point2f, cv::Point2f>>& poin
     return fitSurface(dxs, coeffs.dxCoeffs) && fitSurface(dys, coeffs.dyCoeffs);
 }
 
+/**
+ * @brief Convert a 16-bit grayscale image to an 8-bit RGB image by mapping the 1st and 99th percentiles to 0 and 255, respectively.
+ * @param img16u 
+ * @param dstRgb 
+ * @param lowPercentile 
+ * @param highPercentile 
+*/
+void convert16uToRgbByPercentiles(cv::Mat& img16u, cv::Mat& dstRgb, float lowPercentile=1.0f, float highPercentile=99.0f)
+{
+    double min, max;
+    cv::minMaxLoc(img16u, &min, &max);
+    float low = min + (max - min) * lowPercentile / 100.0f;
+    float high = min + (max - min) * highPercentile / 100.0f;
+    cv::Mat img8u;
+    img16u.convertTo(img8u, CV_8U, 255.0f / (high - low), -255.0f * low / (high - low));
+    cv::cvtColor(img8u, dstRgb, cv::COLOR_GRAY2RGB);
+}
+
+void renderArrows(cv::Mat& img, const std::vector<std::tuple<cv::Point2f, cv::Point2f>>& pointPairs)
+{
+    for (const auto& pp : pointPairs)
+    {
+        cv::Point2f p1 = std::get<0>(pp);
+        cv::Point2f p2 = std::get<1>(pp);
+        cv::arrowedLine(img, p1, p2, cv::Scalar(0, 255, 255), 1);
+    }
+}
+
 void tryBrownConradyModel(cv::Mat& src)
 {
     int width = src.cols;
@@ -380,6 +408,11 @@ void tryBrownConradyModel(cv::Mat& src)
             pointPairs.push_back(std::make_tuple(srcPt, distPt));
         }
     }
+
+    cv::Mat tmp;
+    convert16uToRgbByPercentiles(src, tmp);
+    renderArrows(tmp, pointPairs);
+    saveDebugImage(tmp, "point-pairs");
 
     RemapCoeffs3rdOrder coeffs3;
     
