@@ -49,7 +49,7 @@ namespace CVRemap
 
         for (int i = 0; i < dxCoeffs.size(); i++)
         {
-            fmt::print("{:.3f}, ", dxCoeffs[i]);
+            fmt::print("{:.6e}, ", dxCoeffs[i]);
         }
 
         fmt::print("\n");
@@ -58,7 +58,7 @@ namespace CVRemap
 
         for (int i = 0; i < dyCoeffs.size(); i++)
         {
-            fmt::print("{:.3f}, ", dyCoeffs[i]);
+            fmt::print("{:.6e}, ", dyCoeffs[i]);
         }
 
         fmt::print("\n");

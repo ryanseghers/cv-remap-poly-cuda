@@ -21,33 +21,8 @@ using namespace std::chrono;
 using namespace CVRemap;
 using namespace CppOpenCVUtil;
 
-std::array<float, 10> x_coeff =
-{
-    0.0, // 1
-    0.0, // x
-    0.0, // y
-    0.0, // x^2
-    0.0, // x * y
-    0.0, // y^2
-    0.0, // x^3
-    0.0, // x^2 * y
-    0.0,   // y^2 * x
-    0.0, // y^3
-};
-
-std::array<float, 10> y_coeff =
-{
-    0.0, // 1
-    0.0, // x
-    0.0, // y
-    0.0, // x^2
-    0.0, // x * y
-    0.0, // y^2
-    0.0, // x^3
-    0.0, // x^2 * y
-    0.0,  // y^2 * x
-    0.0, // y^3
-};
+std::array<float, 10> x_coeff = {-3.688481e+01, 8.223150e-02, 7.360715e-02, -6.642533e-05, -6.883254e-05, -3.595157e-05, 2.024929e-08, 2.200053e-09, 3.066782e-08, 8.405326e-10};
+std::array<float, 10> y_coeff = { -3.688481e+01, 7.360715e-02, 8.223150e-02, -3.595157e-05, -6.883254e-05, -6.642533e-05, 8.405326e-10, 3.066782e-08, 2.200053e-09, 2.024929e-08};
 
 void buildCvRemapImages(int width, int height, RemapCoeffs3rdOrder& coeffs, cv::Mat& xMap, cv::Mat& yMap)
 {
@@ -69,12 +44,12 @@ void tryOpenCvRemap(cv::Mat& src, RemapCoeffs3rdOrder& coeffs, int samplingType,
     cv::Mat xMap, yMap;
 
     buildCvRemapImages(src.cols, src.rows, coeffs, xMap, yMap);
-    saveDebugImage(xMap, "xMap-canonical");
-    saveDebugImage(yMap, "yMap-canonical");
+    //saveDebugImage(xMap, "xMap-canonical");
+    //saveDebugImage(yMap, "yMap-canonical");
 
     buildRemapImagesAvx(src.cols, src.rows, coeffs, xMap, yMap);
-    saveDebugImage(xMap, "xMap-avx");
-    saveDebugImage(yMap, "yMap-avx");
+    //saveDebugImage(xMap, "xMap-avx");
+    //saveDebugImage(yMap, "yMap-avx");
 
     cv::remap(src, dst, xMap, yMap, samplingType);
 }
@@ -446,12 +421,9 @@ int main()
     coeffs.dxCoeffs = x_coeff;
     coeffs.dyCoeffs = y_coeff;
 
-    //   coeffs.dxCoeffs = { 0.0f };
-       //coeffs.dxCoeffs[0] = 3.0f;
-       //coeffs.dyCoeffs = { 0.0f };
-       //coeffs.dyCoeffs[0] = 4.0f;
-
     cv::Mat dst;
+
+    //tryBrownConradyModel(img);
 
 #ifdef _DEBUG
     //remapPoly(img, coeffs, cv::INTER_NEAREST, dst);
@@ -463,9 +435,6 @@ int main()
     //remapPoly(img, coeffs, cv::INTER_LINEAR, dst);
     //saveDebugImage(dst, "linear");
 
-    //remapPoly16uAvx(img, coeffs, cv::INTER_LINEAR, dst);
-    //saveDebugImage(dst, "linear_avx");
-
     //remapPoly(img, coeffs, cv::INTER_CUBIC, dst);
     //saveDebugImage(dst, "cubic");
 
@@ -475,10 +444,10 @@ int main()
     //tryOpenCvRemap(img, coeffs, cv::INTER_LINEAR, dst);
     //saveDebugImage(dst, "opencv_linear");
 
-    //tryOpenCvRemap(img, coeffs, cv::INTER_CUBIC, dst);
-    //saveDebugImage(dst, "opencv_cubic");
+    tryOpenCvRemap(img, coeffs, cv::INTER_CUBIC, dst);
+    saveDebugImage(dst, "opencv_cubic");
 
-    //setDevice(0);
+    setDevice(0);
     //printDeviceInfo();
     //tryCudaAddKernel();
 
@@ -488,10 +457,8 @@ int main()
     //tryCudaRemapPoly(img, coeffs, cv::INTER_LINEAR, dst);
     //saveDebugImage(dst, "cuda_linear");
 
-    //tryCudaRemapPoly(img, coeffs, cv::INTER_CUBIC, dst);
-    //saveDebugImage(dst, "cuda_cubic");
-
-    tryBrownConradyModel(img);
+    tryCudaRemapPoly(img, coeffs, cv::INTER_CUBIC, dst);
+    saveDebugImage(dst, "cuda_cubic");
 
 #else
     //benchBuildRemapImages(img, coeffs, false);

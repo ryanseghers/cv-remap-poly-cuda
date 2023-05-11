@@ -118,7 +118,18 @@ __global__ void remapKernel(uint16_t* outputData, int width, int height, float* 
     }
     else if (samplingType == 2)
     {
-        outputData[yi * width + xi] = (uint16_t)(bicubicSample(srcTexture, width, height, x, y) + 0.5f);
+        // bicubic
+        // need to clamp to border to avoid artifacts
+        const int borderPx = 2;
+
+        if ((x >= borderPx) && (x < width - borderPx) && (y >= borderPx) && (y < height - borderPx))
+        {
+            outputData[yi * width + xi] = (uint16_t)(bicubicSample(srcTexture, width, height, x, y) + 0.5f);
+        }
+        else
+        {
+            outputData[yi * width + xi] = (uint16_t)0;
+        }
     }
 }
 
