@@ -14,6 +14,8 @@ Optical distortions such as pincushion and barrel can be described by a field of
 
 Thus the optical distortion model comprises two sets of coefficients for that polynomial: one for the field of dx values and one for the field of dy values. Thus for each output image pixel, one can compute the offset to the input location to sample by evaluating the polynomial once with the dx coefficients and once with the dy coefficients.
 
+![asteroids image with orig and cubic](./images/cuda_cubic.gif)
+
 ## Purpose
 The OpenCV approach of representing sample points with two float images is probably best in most scenarios, however note that two 32-bit float images (which have same size as the output image) consume some memory and some memory bandwidth. Either of those may be an issue in some circumstances, for example in the GPGPU scenario when there is limited memory on the device and/or limited memory bandwidth between host and device. Using the 2-d polynomial approach, instead of copying two full-sized float32 images to the device one just needs to pass the 20 polynomial coefficients. For that reason I was interested to implement this polynomial-based remap and investigate the performance in the GPGPU scenario.
 

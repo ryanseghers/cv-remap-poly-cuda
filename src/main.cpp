@@ -411,7 +411,7 @@ int main()
     ImageUtil::init();
 
     // load test image
-    string imgPath = "C:/Temp/vm-share/wxiv-test-images/FC10880_LANEA_CYCLE000_STEP1.snap_0_STAGE000_488.tif";
+    string imgPath = "Z:\\TestMedia\\Images\\16u\\000_0_image_2k.png";
     cv::Mat img = cv::imread(imgPath, cv::IMREAD_UNCHANGED);
 
     saveDebugImage(img, "orig");
