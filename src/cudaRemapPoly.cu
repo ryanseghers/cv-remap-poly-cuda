@@ -88,7 +88,7 @@ __device__ float bicubicSample(cudaTextureObject_t srcTexture, int width, int he
  * @param dxCoeffs Poly coeffs.
  * @param dyCoeffs Poly coeffs.
  * @param samplingType 0=NN, 1=bilinear, 2=bicubic
- * @param srcTexture 
+ * @param srcTexture
 */
 __global__ void remapKernel(uint16_t* outputData, int width, int height, float* dxCoeffs, float* dyCoeffs, int samplingType, cudaTextureObject_t srcTexture)
 {
@@ -136,7 +136,7 @@ __global__ void remapKernel(uint16_t* outputData, int width, int height, float* 
 /**
  * @brief Host CUDA remap poly entrypoint.
  * Even bicubic is 85% memory throughput (texture cache) limited.
- * @param deviceId 
+ * @param deviceId
  * @param width Input and output image width, in pixels.
  * @param height Input and output image height, in pixels.
  * @param psrc Source image.
@@ -161,7 +161,6 @@ void cudaRemapPoly(int deviceId, int width, int height, const uint16_t* psrc, co
 
     cudaArray_t srcArray = {};
     cudaTextureObject_t srcTexture = {};
-    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<uint16_t>();
 
     // IIRC there are 128 cuda cores per SM, so maybe 128 threads per thread block is good?
     // yes: changing to 16x8=128 did increase theoretical occupancy to 100% (but didn't actually speed this up)
@@ -170,7 +169,7 @@ void cudaRemapPoly(int deviceId, int width, int height, const uint16_t* psrc, co
 
     // however many thread blocks to cover image
     // (if image is not multiple of thread block dims then some will not be computed)
-    dim3 dimGrid(width / dimBlock.x, height / dimBlock.y, 1); 
+    dim3 dimGrid(width / dimBlock.x, height / dimBlock.y, 1);
 
     // dst image
     if (cudaMalloc((void**)&pdst_dev, imageLen) != cudaSuccess)
@@ -212,7 +211,7 @@ void cudaRemapPoly(int deviceId, int width, int height, const uint16_t* psrc, co
     // clang-format off
     remapKernel<<<dimGrid, dimBlock, 0>>>(pdst_dev, width, height, dx_coeffs_dev, dy_coeffs_dev, samplingType, srcTexture);
     // clang-format on
- 
+
     cudaStatus = cudaGetLastError();
 
     if (cudaStatus != cudaSuccess)
@@ -222,9 +221,11 @@ void cudaRemapPoly(int deviceId, int width, int height, const uint16_t* psrc, co
     }
 
     // wait for the kernel to finish and check errors
-    if (cudaDeviceSynchronize() != cudaSuccess)
+    cudaStatus = cudaDeviceSynchronize();
+
+    if (cudaStatus != cudaSuccess)
     {
-        fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching addKernel!\n", cudaStatus);
+        fprintf(stderr, "cudaDeviceSynchronize error: %s\n", cudaGetErrorString(cudaStatus));
         goto Error;
     }
 

@@ -27,6 +27,20 @@ find_package(fmt CONFIG REQUIRED)
 find_package(OpenCV CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 
+# cpp-opencv-util
+# Use a neighbor copy if it exists, otherwise fetch.
+# It also adds cpp-base-util.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../cpp-opencv-util/CMakeLists.txt")
+  add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../cpp-opencv-util" "externals/cpp-opencv-util")
+else()
+  # Use FetchContent to download and include cpp-opencv-util
+  FetchContent_Declare(
+    cpp-opencv-util
+    GIT_REPOSITORY https://github.com/ryanseghers/cpp-opencv-util.git
+  )
+  FetchContent_MakeAvailable(cpp-opencv-util)
+endif()
+
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -55,4 +69,5 @@ set(SOURCE_FILES
 
 add_executable (cvremap ${SOURCE_FILES})
 target_include_directories(cvremap PUBLIC ".")
+set_property(TARGET cvremap PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 target_link_libraries(cvremap PUBLIC ${OpenCV_LIBS} fmt::fmt CUDA::cudart_static CppOpenCVUtilLib Eigen3::Eigen)
